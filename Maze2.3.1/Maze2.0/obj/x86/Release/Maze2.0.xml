@@ -1,0 +1,120 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+Maze2.0
+</name>
+</assembly>
+<members>
+<member name="P:Maze2._0.My.Resources.Resources.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Chest">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Fire0">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Fire1">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Fire2">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Fire3">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Floor">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Level1">
+	<summary>
+  Looks up a localized string similar to WWWWWWWWWWW
+WFFFFFWFFFW
+WFTFFFWFTFW
+WFWCWFWFTFW
+WFFWFFWFTFW
+WFFWFFFFTFW
+WWFWWWWFTPW
+WFFFFFFTTFW
+WFWFWFTFTFW
+WCFFWFFFFFW
+WWWWWWWWWWW.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Level2">
+	<summary>
+  Looks up a localized string similar to WWWWWWWWWWWWWWWWWWWWWWWWWWWW
+WFFTTTTTTFTTTTTTTTTTTCTTTTTW
+WTTTTTTTTTTTTFTTTTTTTTTTTTTW
+WTTTCTTTTTTTTTTTTTTTFTTTTFFW
+WTTTTTTTTFTTTTCTTTTTTTTTTFPW
+WWWWWWWWWWWWWWWWWWWWWWWWWWWW.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Level3">
+	<summary>
+  Looks up a localized string similar to WWWWWWWWWWWWWWWWW
+WFFFWWTCFFWWFFFFW
+WFFFFFFFFFFFFFFFW
+WWWWWFFWWTTTWWWWW
+WWFFTTTFFFFWWFCFW
+WFFWWWWWWWTWWFWFW
+WTFFFWWWWWTFFFFFW
+WFFFFWWWWWTWWWWWW
+WFTFFFFFFFFFFFFPW
+WWWWWWWWWWWWWWWWW.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Level4">
+	<summary>
+  Looks up a localized string similar to .
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Portal0">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Portal1">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Portal2">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Trap0">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Trap1">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Trap2">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Trap3">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="P:Maze2._0.My.Resources.Resources.Wall">
+	<summary>
+  Looks up a localized resource of type System.Drawing.Bitmap.
+</summary>
+</member><member name="T:Maze2._0.My.Resources.Resources">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member>
+</members>
+</doc>

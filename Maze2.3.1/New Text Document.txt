@@ -1,0 +1,387 @@
+Public Class Form1
+    'Eric Yan
+    'Final Project
+    'December 9, 2015
+
+    'To do
+    'Load event
+    'Maze Change
+    'Button down(Player controls)
+    'Enemy AI
+    'Enemy Respawn
+    'Player Attacks
+    'Score
+    'High Score List
+    'Collison Detection
+
+    'Finished
+    'TileCreate
+    'Place Monsters
+    'Maze Info/ Maze Switch
+    'Maze Display
+    'Maze Import
+
+    Dim strMaze(1, 1) As String
+    Dim ptbMazeTiles(1, 1) As PictureBox
+    Dim ptbMazeTile As New PictureBox
+    Dim chrImage As Char
+    Dim HMazeTilePosition As Integer = 0
+    Dim VMazeTilePosition As Integer = 0
+    Dim shtLevel As Short = 1
+    Dim intXSize As Integer
+    Dim intYSize As Integer
+    Dim strLevelLocation As String
+
+    Dim imgFireMonsterAnimation(4) As Image
+    Dim ptbFireMonster As PictureBox
+    'Dim ptbPlayer As PictureBox
+
+    Dim bolMovePossible As Boolean = True
+    Dim ptbPlayerCopy As New PictureBox
+    Dim strPlayerState As String = "Stand"
+    Dim strNextPlayerState As String
+    Dim strPlayerDirection As String = "Right"
+    Dim strPlayerActualDirection As String
+    Dim strPlayerAttack As String
+    Dim shtPlayerHp As Short = 50
+    Dim shtPlayerAp As Short = 50
+    Dim shtPlayerSpd As Short = 5
+    Dim shtPlayerAtk As Short = 1
+    Dim shtPlayerDef As Short = 0
+
+    Dim shtStop As Short = 0
+
+
+    Dim imgTrapAnimation(4) As Image
+    Dim intTrapIndexX As Integer
+    Dim intTrapIndexY As Integer
+    Dim imgPortalAnimation(2) As Image
+    Dim intPortalIndexX As Integer
+    Dim intPortalIndexY As Integer
+    Dim WaitTime As Integer
+    Dim intFrameCounter As Integer
+    Dim shtScore As Short
+
+
+
+    Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        'Preload all the maps, chracters and enemies
+        'Create a pair of parallel arrays to store the x and y values of the walls
+        'use New picturebox to create an array of these wall pieces
+        'Do the same above for visible arrays
+        'ptbPlayerCopy.Size = ptbPlayer.Size
+        'ptbPlayerCopy.Location = ptbPlayer.Location
+        'ptbPlayerCopy.BackColor = Color.Transparent
+        'Me.Controls.Add(ptbPlayerCopy)
+        Call MazeImport()
+        Me.lblPlayerHp.Text = "Hp: " + shtPlayerHp.ToString
+        Me.lblPlayerAp.Text = "Ap: " + shtPlayerAp.ToString
+        Me.lblPlayerAtk.Text = "Atk: " + shtPlayerAtk.ToString
+        Me.lblPlayerDef.Text = "Def: " + shtPlayerDef.ToString
+        Me.lblPlayerSpd.Text = "Spd: " + shtPlayerSpd.ToString
+
+        For index = 0 To imgTrapAnimation.Length - 2
+            imgTrapAnimation(index) = Image.FromFile("Trap" & index.ToString & ".jpg")
+        Next index
+        For index = 0 To imgPortalAnimation.Length - 2
+            imgPortalAnimation(index) = Image.FromFile("Portal" & index.ToString & ".jpg")
+        Next
+        For index = 0 To imgFireMonsterAnimation.Length - 1
+            imgFireMonsterAnimation(index) = Image.FromFile("Fire" & index.ToString & ".jpg")
+        Next
+
+        'Add more images
+        'Use array to show animation
+        'ptbSlime(0, 0) = Image.FromFile
+
+
+
+    End Sub
+    Private Sub MazeGenerate()   'Also Maze Display
+        Dim indexX = 0
+        Dim indexY = 0
+        Dim ptbNew As PictureBox
+        ReDim ptbMazeTiles(strMaze.GetLength(0) - 1, strMaze.GetLength(1) - 1)
+        For indexY = 0 To (strMaze.GetLength(0) - 2)
+            For indexX = 0 To (strMaze.GetLength(1) - 2)
+                ptbNew = New PictureBox
+                chrImage = strMaze(indexY, indexX)
+                Call TileCreate(chrImage)
+                ptbNew.Size = New Drawing.Size(50, 50)
+                ptbNew.Location = New Point(HMazeTilePosition, VMazeTilePosition)
+                ptbNew.Image = ptbMazeTile.Image
+                ptbNew.BackgroundImage = ptbMazeTile.BackgroundImage
+                ptbNew.Tag = ptbMazeTile.Tag
+                ptbNew.Name = "ptb" & indexY.ToString & indexX.ToString
+                ptbMazeTiles(indexY, indexX) = ptbNew
+                Me.Controls.Add(ptbNew)
+                HMazeTilePosition += 50
+            Next
+            HMazeTilePosition = 0
+            VMazeTilePosition += 50
+        Next
+        HMazeTilePosition = 0
+        VMazeTilePosition = 0
+        indexX = 0
+        indexY = 0
+        'Call CollisionDetection()
+    End Sub
+    Private Sub TileCreate(ByVal chrImage As Char)
+
+
+        'chrImage is to be imported through a txt maze
+        'ptbMazeTile is to be an array with two dimensions
+
+        If chrImage = "W" Then
+            ptbMazeTile.Tag = "Wall"
+            ptbMazeTile.Image = Image.FromFile("Wall.jpg")
+        ElseIf chrImage = "F" Then
+            ptbMazeTile.Tag = "Floor"
+            ptbMazeTile.Image = Image.FromFile("Floor.jpg")
+        ElseIf chrImage = "P" Then
+            ptbMazeTile.Tag = "Portal"
+            ptbMazeTile.Image = Image.FromFile("Portal0.jpg")
+        ElseIf chrImage = "T" Then
+            ptbMazeTile.Tag = "Trap"
+            ptbMazeTile.Image = Image.FromFile("Trap0.jpg")
+        ElseIf chrImage = "C" Then
+            ptbMazeTile.Tag = "Chest"
+            ptbMazeTile.Image = Image.FromFile("Chest.png")
+            ptbMazeTile.BackgroundImage = Image.FromFile("Floor.jpg")
+        End If
+
+        'ptbMazeTile.Left = HMazeTilePosition
+        'ptbMazeTile.Top = VMazeTilePosition
+
+    End Sub
+    Private Sub MazeImport()
+        Call MazeInfo()
+        Dim fileReader = My.Computer.FileSystem.OpenTextFileReader(strLevelLocation)
+        Dim stringReader As String
+        ReDim strMaze(intYSize, intXSize)
+        For indexY = 0 To (intYSize - 1)
+            stringReader = fileReader.ReadLine
+            For indexX = 0 To (intXSize - 1)
+                strMaze(indexY, indexX) = stringReader.Chars(indexX)
+                'MessageBox.Show(strMaze(indexY, indexX))
+            Next
+        Next
+        Call MazeGenerate()
+    End Sub
+    Private Sub MazeInfo()
+
+        'shtLevel add one for every level
+        If shtLevel = 1 Then
+            intXSize = 11
+            intYSize = 11
+            strLevelLocation = "M:\Programming 11\Final Project\Maze2.0\Maze2.0\bin\Debug\Level1.txt"
+        ElseIf shtLevel = 2 Then
+            intXSize = 28
+            intYSize = 5
+            strLevelLocation = "M:\Programming 11\Final Project\Maze2.0\Maze2.0\bin\Debug\Level2.txt"
+        End If
+    End Sub
+    Private Sub lblSTest_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lblTest.Click
+        'strMaze(0, 0) = "T"
+        'strMaze(0, 1) = "W"
+        'strMaze(1, 0) = "P"
+        'strMaze(1, 1) = "C"
+
+        Call MazeImport()
+
+
+    End Sub
+    Private Function PlaceMonsters()
+        Dim shtBigX As Short = strMaze.GetLength(1)
+        Dim shtBigY As Short = strMaze.GetLength(0)
+        Dim intX As Integer = Nothing
+        Dim intY As Integer = Nothing
+        Do
+            Randomize()
+            intX = Int((shtBigX - 1) * Rnd())
+            intY = Int((shtBigY - 1) * Rnd())
+        Loop Until ptbMazeTiles(intX, intY).Tag = "Floor"
+
+        Return intX And intY
+        'Put under individual monsters
+        'ptbSlime.Top = intY  50
+        'ptbSlime.Left = intX  50
+    End Function
+    Private Sub CollisionDetection(ByVal Tester As PictureBox, ByVal NextDirection As String, ByVal speed As Short, ByVal identificator As String)
+        Dim TesterCopy = New PictureBox
+        Dim XVal, YVal, Width, Height As Short
+        XVal = Tester.Left
+        YVal = Tester.Top
+        Width = Tester.Width
+        Height = Tester.Height
+        TesterCopy.Left = XVal
+        TesterCopy.Top = YVal
+        TesterCopy.Width = Width
+        TesterCopy.Height = Height
+
+
+        If NextDirection = "Right" Then
+            TesterCopy.Left += speed
+        ElseIf NextDirection = "Left" Then
+            TesterCopy.Left -= speed
+        ElseIf NextDirection = "Up" Then
+            TesterCopy.Top -= speed
+        ElseIf NextDirection = "Down" Then
+            TesterCopy.Top += speed
+        End If
+
+
+        Dim indexY = 1
+        Dim indexX = 1
+        Do
+            Do
+
+                If TesterCopy.Bounds.IntersectsWith(ptbMazeTiles(indexY - 1, indexX - 1).Bounds) And ptbMazeTiles(indexY - 1, indexX - 1).Tag = "Wall" Then
+                    bolMovePossible = False
+                ElseIf TesterCopy.Bounds.IntersectsWith(ptbMazeTiles(indexY - 1, indexX - 1).Bounds) And ptbMazeTiles(indexY - 1, indexX - 1).Tag = "Chest" And identificator = "Player" Then
+                    bolMovePossible = True
+                ElseIf TesterCopy.Bounds.IntersectsWith(ptbMazeTiles(indexY - 1, indexX - 1).Bounds) And ptbMazeTiles(indexY - 1, indexX - 1).Tag = "Trap" And identificator = "Player" Then
+                    bolMovePossible = True
+                    tmrTrap.Enabled = True
+                    intTrapIndexX = indexX - 1
+                    intTrapIndexY = indexY - 1
+
+                ElseIf TesterCopy.Bounds.IntersectsWith(ptbMazeTiles(indexY - 1, indexX - 1).Bounds) And ptbMazeTiles(indexY - 1, indexX - 1).Tag = "Portal" And identificator = "Player" Then
+                    bolMovePossible = True
+                    tmrPortal.Enabled = True
+                    intPortalIndexX = indexX - 1
+                    intPortalIndexY = indexY - 1
+                    'Need to clear level first
+                Else
+                    bolMovePossible = True
+                End If
+                indexX += 1
+            Loop While indexX <= intXSize
+            indexX = 1
+            indexY += 1
+        Loop While indexY <= intYSize
+    End Sub
+    Private Sub tmrTrap_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tmrTrap.Tick
+        shtPlayerHp -= 1
+        ptbMazeTiles(intTrapIndexY, intTrapIndexX).Image = imgTrapAnimation(intFrameCounter Mod 3)
+        intFrameCounter += 1
+        Me.lblPlayerHp.Text = "Hp: " + shtPlayerHp.ToString
+        Call checkHp()
+    End Sub
+    Private Sub tmrPortal_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tmrPortal.Tick
+        ptbMazeTiles(intPortalIndexY, intPortalIndexX).Image = imgPortalAnimation(intFrameCounter Mod 3)
+        intFrameCounter += 1
+        WaitTime += 1
+        If WaitTime = 30 Then
+            tmrPortal.Enabled = False
+            Call LevelChanger()
+        End If
+    End Sub
+    Private Sub LevelChanger()
+        shtLevel += 1
+        MessageBox.Show("Welcome to level" + shtLevel.ToString)
+        ptbPlayer.Left = 50
+        ptbPlayer.Top = 50
+        HMazeTilePosition = 0
+        VMazeTilePosition = 0
+        intTrapIndexY = 0
+        intTrapIndexX = 0
+        intPortalIndexX = 0
+        intPortalIndexY = 0
+
+        For indexY = 0 To (strMaze.GetLength(0) - 2)
+            For indexX = 0 To (strMaze.GetLength(1) - 2)
+                ptbMazeTiles(indexY, indexX) = Nothing
+            Next
+        Next
+
+        Call MazeImport()
+    End Sub
+    Private Sub checkHp()
+        If shtPlayerHp <= 0 Then
+            tmrTrap.Enabled = False
+            ptbPlayer.Left = 50
+            ptbPlayer.Top = 50
+            MessageBox.Show("You died ...")
+        End If
+    End Sub
+    Private Sub Form1_KeyDown(ByVal sender As Object, ByVal e As KeyEventArgs) Handles Me.KeyDown
+        If e.KeyValue = Keys.Up Then
+            strPlayerState = "Run"
+            strPlayerDirection = "Up"
+            'ptbPlayerCopy.Top -= shtPlayerSpd
+        ElseIf e.KeyValue = Keys.Down Then
+            strPlayerState = "Run"
+            strPlayerDirection = "Down"
+            ' ptbPlayerCopy.Top += shtPlayerSpd
+        ElseIf e.KeyValue = Keys.Right Then
+            strPlayerState = "Run"
+            strPlayerDirection = "Right"
+            'ptbPlayerCopy.Left += shtPlayerSpd
+        ElseIf e.KeyValue = Keys.Left Then
+            strPlayerState = "Run"
+            strPlayerDirection = "Left"
+            'ptbPlayerCopy.Left -= shtPlayerSpd
+        ElseIf e.KeyValue = Keys.A Then
+            strPlayerAttack = "Attack"
+        ElseIf e.KeyValue = Keys.S Then
+            strPlayerAttack = "Defend"
+        ElseIf e.KeyValue = Nothing Then
+            strPlayerState = "Stand"
+            tmrPlayerMove.Enabled = False
+        End If
+        'Call CollisionDetection(ptbPlayer, strPlayerDirection, shtPlayerSpd, ptbPlayer.Tag)
+
+        tmrPlayerMove.Enabled = True
+        Call PlayerAttack()
+
+    End Sub
+    Private Sub PlayerMovement()
+
+        If strPlayerActualDirection = "Up" Then
+            Me.ptbPlayer.Top -= shtPlayerSpd
+        ElseIf strPlayerActualDirection = "Down" Then
+            Me.ptbPlayer.Top += shtPlayerSpd
+        ElseIf strPlayerActualDirection = "Left" Then
+            Me.ptbPlayer.Left -= shtPlayerSpd
+        ElseIf strPlayerActualDirection = "Right" Then
+            Me.ptbPlayer.Left += shtPlayerSpd
+        End If
+
+    End Sub
+    Private Sub PlayerAttack()
+
+    End Sub
+    Private Sub Form1_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyUp
+        If e.KeyValue = Keys.Space Then
+
+        End If
+    End Sub
+    Private Sub lblCollision_Click(ByVal sender As Object, ByVal e As EventArgs) Handles lblCollision.Click
+        ' Call CollisionDetection()
+    End Sub
+
+    Private Sub tmrPlayerMove_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tmrPlayerMove.Tick
+        CollisionDetection(ptbPlayer, strPlayerDirection, shtPlayerSpd, ptbPlayer.Tag)
+        'MessageBox.Show(bolMovePossible)
+
+        If bolMovePossible = False Then
+            MessageBox.Show(",")
+            strPlayerState = "Stand"
+
+            'ptbPlayer.Left += shtStop
+            'ptbPlayer.Left += shtStop
+            'If strPlayerDirection = strPlayerActualDirection Then
+            '    strPlayerState = "Stand"
+            '    ptbPlayer.Left = ptbPlayer.Left
+            '    ptbPlayer.Top = ptbPlayer.Top
+            'End If
+            'Else
+            '    strPlayerActualDirection = strPlayerDirection
+        End If
+        If strPlayerState = "Run" And bolMovePossible = True Then
+            Call PlayerMovement()
+        End If
+    End Sub
+End Class
+
